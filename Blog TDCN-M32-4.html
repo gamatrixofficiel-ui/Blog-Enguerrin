@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog TDCN-M32-4 - Astronomie</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #050a1e;
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f0c29 100%);
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .shooting-star {
+            position: absolute;
+            height: 2px;
+         /* On inverse le dégradé : le blanc (tête) à droite, le transparent (queue) à gauche */
+            background: linear-gradient(to left, #fff, transparent); 
+            animation: shoot 3s linear infinite;
+            transform-origin: right center; /* On change l'origine pour la rotation */
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: rotate(-45deg) translateX(-200px); /* Elle part de plus loin */
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(-45deg) translateX(800px); /* Elle traverse l'écran */
+                opacity: 0;
+            }
+        }
+        header {
+            background: rgba(10, 14, 39, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(100, 181, 246, 0.3);
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #64b5f6, #b39ddb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #9e9e9e;
+            font-size: 1.1rem;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 1.5rem auto 0;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: #64b5f6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        nav a:hover {
+            background: rgba(100, 181, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .about-section {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 3rem;
+            background: rgba(26, 26, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(100, 181, 246, 0.2);
+            display: none;
+        }
+
+        .about-section.active {
+            display: block;
+        }
+
+        .about-section h2 {
+            color: #64b5f6;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .about-section h3 {
+            color: #b39ddb;
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-section p {
+            color: #c0c0c0;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .about-section ul {
+            color: #c0c0c0;
+            line-height: 1.8;
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .about-section strong {
+            color: #64b5f6;
+        }
+
+        .principle-box {
+            background: rgba(100, 181, 246, 0.1);
+            border-left: 3px solid #64b5f6;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .article-card {
+            background: rgba(26, 26, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(100, 181, 246, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(100, 181, 246, 0.3);
+            border-color: rgba(100, 181, 246, 0.5);
+        }
+
+        .article-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(100, 181, 246, 0.2);
+        }
+
+        .article-header {
+            background: linear-gradient(135deg, rgba(100, 181, 246, 0.2), rgba(179, 157, 219, 0.2));
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(100, 181, 246, 0.2);
+        }
+
+        .article-card h2 {
+            color: #64b5f6;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #9e9e9e;
+            margin-top: 0.5rem;
+        }
+
+        .article-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .article-content {
+            padding: 1.5rem;
+        }
+
+        .article-content p {
+            color: #c0c0c0;
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .read-more {
+            display: inline-block;
+            color: #64b5f6;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .read-more:hover {
+            color: #b39ddb;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(26, 26, 62, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 3rem;
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: #64b5f6;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+        }
+
+        .close-modal:hover {
+            color: #b39ddb;
+            transform: rotate(90deg);
+        }
+
+        .modal-content h2 {
+            color: #64b5f6;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content h3 {
+            color: #b39ddb;
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p, .modal-content li {
+            color: #c0c0c0;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content strong {
+            color: #64b5f6;
+        }
+
+        .modal-content ul {
+            list-style-position: inside;
+            margin-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content a {
+            color: #64b5f6;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .modal-content a:hover {
+            color: #b39ddb;
+        }
+
+        footer {
+            background: rgba(10, 14, 39, 0.9);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 2px solid rgba(100, 181, 246, 0.3);
+            color: #9e9e9e;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .modal-content {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        /* Empêche les images de déborder des articles et du modal */
+        .modal-content img, .article-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1.5rem auto;
+            border-radius: 10px;
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .img-caption {
+         text-align: center;
+         font-size: 0.9rem;
+         color: #9e9e9e;
+         font-style: italic;
+         margin-top: -1rem;
+         margin-bottom: 1.5rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="stars-bg" id="starsBg"></div>
+
+    <header>
+        <div class="header-content">
+            <h1>Blog TDCN-M32-4</h1>
+            <p class="subtitle">Explorer l'univers et comprendre notre place dans le cosmos</p>
+        </div>
+        <nav>
+            <a href="#" onclick="showSection('articles'); return false;">Articles</a>
+            <a href="#" onclick="showSection('about'); return false;">À propos</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="articles-grid" id="articles"></div>
+        
+        <div class="about-section" id="about">
+            <h2>📜 Charte Éditoriale - Blog TDCN-M32-4</h2>
+            
+            <h3>Notre Mission</h3>
+            <p>Le Blog TDCN-M32-4 a pour vocation de démocratiser l'astronomie et les sciences de l'univers en rendant accessible au grand public les découvertes et concepts fondamentaux qui façonnent notre compréhension du cosmos. Nous croyons que chacun devrait pouvoir s'émerveiller devant l'immensité de l'univers et comprendre les mécanismes qui régissent notre existence cosmique.</p>
+
+            <h3>Nos Valeurs Éditoriales</h3>
+            
+            <div class="principle-box">
+                <strong>Rigueur Scientifique</strong>
+                <p>Chaque article publié sur ce blog repose sur des sources académiques vérifiées et des publications scientifiques reconnues. Nous citons systématiquement nos sources et veillons à distinguer clairement les faits établis des hypothèses en cours d'investigation.</p>
+            </div>
+
+            <div class="principle-box">
+                <strong>Accessibilité</strong>
+                <p>Nous nous engageons à rendre la science compréhensible sans la simplifier à l'excès. Notre approche pédagogique privilégie les analogies, les exemples concrets et les explications progressives pour permettre à chacun, quel que soit son niveau, de saisir les concepts astronomiques.</p>
+            </div>
+
+            <div class="principle-box">
+                <strong>Émerveillement et Curiosité</strong>
+                <p>L'astronomie est avant tout une aventure humaine portée par la curiosité et l'émerveillement. Nos articles cherchent à transmettre cette passion en mettant en lumière la beauté des phénomènes cosmiques et l'ingéniosité des découvertes scientifiques.</p>
+            </div>
+
+            <div class="principle-box">
+                <strong>Perspective Historique</strong>
+                <p>Comprendre l'astronomie, c'est aussi comprendre son histoire. Nous contextualisons les découvertes actuelles en les reliant aux avancées passées et aux scientifiques qui ont contribué à notre connaissance de l'univers.</p>
+            </div>
+
+            <h3>Ligne Éditoriale</h3>
+            <p>Nos articles explorent trois axes principaux :</p>
+            <ul>
+                <li><strong>Les fondamentaux :</strong> Formation des étoiles, des planètes, évolution des systèmes stellaires</li>
+                <li><strong>L'histoire de l'astronomie :</strong> Instruments d'observation, grandes découvertes, évolution des méthodes</li>
+                <li><strong>Les frontières de la recherche :</strong> Exoplanètes, systèmes protoplanétaires, nouvelles observations</li>
+            </ul>
+
+            <h3>Engagement Qualité</h3>
+            <p>Nous nous engageons à :</p>
+            <ul>
+                <li>Vérifier toutes nos informations auprès de sources primaires (publications scientifiques, observatoires, agences spatiales)</li>
+                <li>Maintenir une bibliographie complète et accessible pour chaque article</li>
+                <li>Actualiser nos contenus lorsque de nouvelles découvertes viennent enrichir ou nuancer nos propos</li>
+                <li>Favoriser la compréhension plutôt que l'accumulation de termes techniques</li>
+                <li>Respecter l'esprit critique et la démarche scientifique dans nos analyses</li>
+            </ul>
+
+            <h3>Public Cible</h3>
+            <p>Ce blog s'adresse à tous les passionnés d'astronomie, des curieux débutants aux amateurs éclairés, en passant par les étudiants en sciences. Nous pensons que la curiosité pour l'univers transcende les niveaux d'expertise et que chaque lecteur peut trouver matière à s'enrichir et à s'émerveiller.</p>
+
+            <h3>Contact</h3>
+            <p>Ce blog est réalisé par <strong>Enzo Guerrin</strong> dans le cadre du projet TDCN-M32-4. Pour toute question, suggestion ou remarque concernant nos contenus, n'hésitez pas à nous contacter.</p>
+
+            <p style="text-align: center; margin-top: 3rem; color: #64b5f6; font-style: italic;">
+                "L'astronomie nous enseigne l'humilité et forge le caractère. Elle montre que notre Terre n'est qu'un grain de sable dans un univers immense."
+                <br>— Carl Sagan
+            </p>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Blog TDCN-M32-4 - Astronomie et Sciences de l'Univers</p>
+        <p>Réalisé avec passion pour la découverte cosmique par Enzo Guerrin</p>
+    </footer>
+
+    <script>
+        const articles = [
+            {
+                id: 1,
+                title: "Explorer le ciel pour comprendre notre foyer : les nouveaux objets d'étude de l'astronomie",
+                author: "Enzo Guerrin",
+                date: "5 janvier 2026",
+                image: "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=800&q=80",
+                excerpt: "Pourquoi regarder des étoiles très lointaines alors que nous avons déjà notre propre système solaire ? C'est un peu comme regarder des photos de famille : en observant d'autres systèmes stellaires, les astronomes découvrent en fait notre propre passé.",
+                content: `
+                    <h3>Un laboratoire de diversité : les exoplanètes</h3>
+                    <p>Depuis 1995, plus de <strong>5 000 exoplanètes</strong> ont été identifiées. Grâce à la méthode du transit (mesure de la baisse de lumière quand une planète passe devant son étoile) et celle des vitesses radiales (mesure de l'oscillation de l'étoile), nous découvrons des mondes surprenants. L'existence de « super-Terres » ou de « mini-Neptunes », absentes de notre système solaire, nous pousse à nous demander pourquoi notre configuration est si particulière. L'analyse de leur atmosphère par spectroscopie permet même d'y chercher des traces d'eau ou de méthane, les briques de la vie.</p>
+
+                    <h3>Remonter le temps : disques protoplanétaires et étoiles jeunes</h3>
+                    <p>Grâce à des outils comme le télescope James Webb (JWST) ou l'observatoire ALMA, nous observons désormais des systèmes en pleine naissance. Les disques protoplanétaires — de vastes anneaux de gaz et de poussière entourant les jeunes étoiles comme HL Tauri — montrent la matière en train de s'agglomérer pour former des planètes. C'est une occasion unique d'observer en direct des phénomènes que le Système solaire a connus il y a 4,5 milliards d'années : migration des géantes gazeuses et formation des mondes rocheux.</p>
+
+                    <h3>L'influence de l'environnement</h3>
+                    <p>L'étude des systèmes binaires (deux étoiles orbitant l'une autour de l'autre) et des amas stellaires nous apprend que le Soleil n'est pas la norme. Plus de la moitié des étoiles vivent en couple ! De plus, l'analyse de la « métallicité » (la richesse en éléments lourds comme le fer) des étoiles lointaines nous aide à comprendre d'où viennent les composants de la Terre. L'hypothèse actuelle suggère que notre système est né dans un amas dense, enrichi par l'explosion d'une étoile voisine (supernova).</p>
+
+                    <h3>Conclusion : Le Système solaire, une exception ?</h3>
+                    <p>Qu'il s'agisse de comètes lointaines ou de planètes encore chaudes comme celles de HR 8799, chaque objet d'étude est une pièce du puzzle. En comparant ces systèmes de tous âges, nous comprenons enfin que notre système solaire est le résultat d'une dynamique complexe, où chaque collision et chaque migration a permis l'émergence d'une planète habitable comme la nôtre.</p>
+
+                    <h3>Webographie</h3>
+                    <ul>
+                        <li><a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank">NASA exoplanet archive</a></li>
+                        <li><a href="https://www.eso.org/public/france/teles-instr/alma/" target="_blank">ESO (European Southern Observatory)</a></li>
+                        <li><a href="https://esawebb.org/" target="_blank">Le site du James Webb Space Telescope (ESA)</a></li>
+                        <li><a href="https://science.nasa.gov/mission/webb/" target="_blank">Le site du James Webb Space Telescope (NASA)</a></li>
+                    </ul>
+                `
+            },
+            {
+                id: 2,
+                title: "Les outils et méthodes d'observation au cours de l'histoire",
+                author: "Enzo Guerrin",
+                date: "5 janvier 2026",
+                image: "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=800&q=80",
+                excerpt: "L'histoire de l'astronomie est une quête incessante de lumière. Depuis les premières civilisations, l'humanité a développé des outils toujours plus puissants pour déchiffrer le ciel.",
+                content: `
+                    <h3>Du Regard nu vers l'Infini</h3>
+                    <p>L'histoire de l'astronomie est une quête incessante de lumière. Depuis les premières civilisations, l'humanité a développé des outils toujours plus puissants pour déchiffrer le ciel, transformant des points lumineux en mondes compréhensibles. Cette épopée technique est un voyage en sept étapes majeures.</p>
+
+                    <h3>L'Œil, la Main et l'Esprit</h3>
+                    <p>Pendant des millénaires, l'instrument astronomique fondamental fut l'<strong>œil humain</strong>, guidé par l'intelligence. Les astronomes de l'Antiquité et du monde arabo-musulman perfectionnèrent des instruments de mesure angulaire en métal ou en bois, comme le <strong>quadrant</strong> et l'<strong>astrolabe</strong>. Ces calculateurs analogiques sophistiqués permettaient de cartographier les étoiles, de mesurer le temps et, dans le monde islamique, de déterminer la direction de La Mecque ou les heures de prière. Cette période vit aussi la construction des <strong>premiers grands observatoires</strong>, comme celui de Maragha au XIIIe siècle, équipés d'instruments monumentaux.</p>
+
+                    <h3>La Lumière Capturée</h3>
+                    <p>Le véritable bond advint au début du XVIIe siècle avec l'invention de la <strong>lunette astronomique</strong>. Si son origine précise est disputée entre plusieurs artisans, c'est <strong>Galilée</strong> qui, en 1609, la tourna résolument vers le ciel. Ses observations, les montagnes de la Lune, les satellites de Jupiter, bouleversèrent la vision du monde. Cependant, les lentilles souffraient d'aberrations chromatiques, colorant les images. La solution vint d'<strong>Isaac Newton</strong> en 1668 : il remplaça la lentille d'objectif par un <strong>miroir concave</strong>, créant le <strong>premier télescope à réflexion</strong>. Ce principe, évitant l'aberration chromatique, allait devenir la clé de l'astronomie future.</p>
+
+                    <h3>La Course au Diamètre</h3>
+                    <p>Avec le principe de Newton établi, la voie était libre pour construire des instruments toujours plus grands pour collecter plus de lumière. Le XVIIIe et le XIXe siècles furent marqués par une course au diamètre. William Herschel construisit des télescopes monumentaux, découvrant la planète Uranus avec l'un d'eux. En 1845, le <strong>« Léviathan de Parsonstown »</strong>, avec son miroir de 1,83 mètre, domina le monde pendant des décennies. Ces géants de métal et de verre révélèrent la structure de nébuleuses, sans encore comprendre qu'il s'agissait souvent d'autres galaxies.</p>
+
+                    <h3>Hors de l'Atmosphère</h3>
+                    <p>Le XXe siècle apporta deux révolutions. D'abord, la construction de télescopes terrestres toujours plus puissants sur des sommets, comme le télescope de 2,5 mètres du Mont Wilson. C'est avec lui qu'<strong>Edwin Hubble</strong> prouva dans les années 1920 que l'Univers s'étendait bien au-delà de notre Voie lactée. Ensuite, et surtout, l'idée de quitter l'atmosphère terrestre, qui déforme et absorbe la lumière des astres. Ce rêve se concrétisa le 24 avril 1990 avec le lancement du <strong>télescope spatial Hubble</strong>. Placé <strong>en orbite</strong>, <strong>libéré des turbulences atmosphériques</strong>, son miroir de 2,4 mètres offrit une clarté inédite et transforma littéralement notre vision du cosmos, sondant ses profondeurs et son histoire.</p>
+
+                    <h3>La Synergie et l'Avenir</h3>
+                    <p>Aujourd'hui, l'astronomie repose sur une <strong>synergie d'outils</strong>. Au sol, des télescopes comme le <strong>Très Grand Télescope (VLT)</strong> utilisent l'optique adaptative pour corriger en temps réel les effets de l'atmosphère. Dans l'espace, une flotte de télescopes (<strong>Hubble, Chandra, James Webb</strong>) observe <strong>différentes longueurs d'onde</strong> du rayonnement électromagnétique (lumière). La <strong>distinction entre l'instrument et le télescope</strong> est désormais claire : le télescope est le collecteur de lumière, tandis que l'instrument (<strong>spectrographe, caméra ultrasensible</strong>) fixé à son foyer analyse cette lumière. Cette spécialisation permet des études d'une précision inouïe.</p>
+
+                    <h3>Webographie</h3>
+                    <ul>
+                        <li><a href="https://artsandculture.google.com/story/le-monde-arabe-et-le-ciel-l-astronomie-il-y-a-mille-ans/KAXBlG9b5ObaLA?hl=fr" target="_blank">Le monde arabe et le ciel : l'astronomie il y a mille ans</a></li>
+                        <li><a href="https://science.nasa.gov/mission/hubble/" target="_blank">Hubble Space Telescope - NASA</a></li>
+                        <li><a href="https://www.ebsco.com/research-starters/history/newtons-reflecting-telescope" target="_blank">Newton's Reflecting Telescope</a></li>
+                        <li><a href="https://gallica.bnf.fr/accueil/fr/html/les-lunettes-astronomiques" target="_blank">Les lunettes astronomiques - Gallica BnF</a></li>
+                        <li><a href="https://lespritsorcier.org/blogs-membres/histoire-du-telescope-observer-le-cosmos/" target="_blank">Histoire du télescope de Newton à nos jours</a></li>
+                        <li><a href="https://fr.wikipedia.org/wiki/Lunette_astronomique" target="_blank">Lunette astronomique - Wikipedia</a></li>
+                    </ul>
+                `
+            },
+            {
+                id: 3,
+                title: "La naissance d'une étoile, l'élément fondamental d'un système stellaire",
+                author: "Enzo Guerrin",
+                date: "5 janvier 2026",
+                image: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80",
+                excerpt: "La formation d'une étoile constitue l'un des processus les plus déterminants de l'évolution de l'univers. Chaque étoile est le cœur énergétique d'un système stellaire.",
+                content: `
+                    <h3>L'effondrement d'un nuage interstellaire</h3>
+                    <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800" alt="Nébuleuse">
+                    <p class="img-caption">Fig 1. Les pouponnières d'étoiles au sein d'une nébuleuse moléculaire.</p>
+
+                    <p>La formation d'une étoile constitue l'un des processus les plus déterminants de l'évolution de l'univers. Chaque étoile est le cœur énergétique d'un système stellaire. Comprendre sa naissance, c'est saisir l'origine même des planètes, des éléments lourds, et des conditions propices à la vie.</p>
+
+                    <h3>L'effondrement d'un nuage interstellaire</h3>
+                    <p>Tout commence au sein de vastes nuages de gaz et de poussières, appelés <strong>nébuleuses moléculaires</strong>. Sous l'effet de perturbations externes (ondes de choc, supernova proches ou simple instabilité interne), ces régions commencent à s'effondrer gravitationnellement. La densité augmente. La matière se contracte. La température grimpe. Comme le rappelle l'article publié dans Astronomy & Astrophysics (2023), « la densité centrale d'un nuage en effondrement peut augmenter d'un facteur dix mille avant l'apparition du premier noyau protostellaire ». Cette phase marque la transition vers l'état de protostar.</p>
+
+                    <h3>La formation de la protostar</h3>
+                    <p>Au centre, la matière forme un cœur chaud et compact. Autour, un <strong>disque d'accrétion</strong> se développe, c'est là que se formeront plus tard planètes, astéroïdes et comètes. La protostar continue d'attirer et d'engloutir la matière environnante. L'équilibre est fragile : le gaz qui tombe augmente la pression interne, tandis que les jets bipolaires expulsent une partie du matériau. L'énergie dégagée ne provient pas encore de la fusion nucléaire, mais de la contraction gravitationnelle.</p>
+
+                    <h3>L'allumage de la fusion</h3>
+                    <p>Lorsque le cœur atteint environ <strong>10 millions de degrés</strong>, l'hydrogène commence à fusionner. L'étoile rentre alors dans sa longue phase de <strong>séquence principale</strong>. C'est à partir de ce moment qu'elle devient une étoile stable et lumineuse, capable d'alimenter son système planétaire.</p>
+
+                    <h3>Conclusion</h3>
+                    <p>La naissance d'une étoile est un processus lent et complexe. De la poussière initiale au rayonnement lumineux, elle façonne la structure de la galaxie et prépare le terrain à l'apparition de mondes. Étudier cette genèse, c'est mieux comprendre notre propre origine car notre Soleil est lui aussi né d'un simple nuage interstellaire, il y a 4,6 milliards d'années.</p>
+                    
+                    <h3>Bibliographie</h3>
+                    <ul>
+                        <li>Article Astronomy & Astrophysics (2023) - Sur la densité centrale des nuages en effondrement</li>
+                    </ul>
+                `
+            },
+            {
+                id: 4,
+                title: "La formation des systèmes planétaires : Une chorégraphie cosmique",
+                author: "Enzo Guerrin",
+                date: "5 janvier 2026",
+                image: "https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=800&q=80",
+                excerpt: "La naissance d'un système planétaire est indissociable de celle de son étoile. Tout commence au cœur d'un gigantesque nuage moléculaire qui s'effondre sous sa propre gravité.",
+                content: `
+                    <p>La naissance d'un système planétaire est indissociable de celle de son étoile. Tout commence au cœur d'un gigantesque nuage moléculaire qui s'effondre sous sa propre gravité. Par conservation du moment cinétique, la matière ne tombe pas directement sur l'étoile naissante mais s'aplatit pour former un <strong>disque protoplanétaire</strong> de gaz et de poussières. C'est dans ce berceau tourbillonnant que va se jouer la genèse des mondes.</p>
+
+                    <img src="https://cdn8.futura-sciences.com/a1280/images/exoplanete-disque-protoplanetaire-naoj.jpg" alt="Disque protoplanétaire">
+                    <p class="img-caption">Fig 1. Vue d'artiste d'un disque protoplanétaire entourant une jeune étoile.</p>
+
+                    <h3>De la poussière aux planétésimaux : le défi de l'accrétion</h3>
+                    <p>Comment passe-t-on de grains de poussière micrométriques à des planètes géantes ? Le processus initial repose sur l'<strong>accrétion</strong>. Au départ, ce sont de simples forces électrostatiques qui permettent aux grains de s'agglomérer. Cependant, comme l'a théorisé le planétologue S.J. Weidenschilling, ces amas rencontrent rapidement un obstacle majeur : la friction avec le gaz du disque.</p>
+
+                    <p>Pour survivre sans tomber dans l'étoile, ces agrégats doivent croître très vite pour devenir des <strong>planétésimaux</strong> (environ 1 km de diamètre). À ce stade, leur propre gravité devient suffisante pour attirer d'autres corps : c'est le début d'une course à la taille critique.</p>
+
+                    <h3>La Ligne de Glace : Architecte du système</h3>
+                    <p>La structure finale du système dépend d'une frontière invisible appelée la <strong>Ligne de Glace</strong> (Snowline).</p>
+                    
+                    <img src="https://observatoiredeparis.psl.eu/IMG/jpg/planetesimal_formation_article.jpg" alt="Ligne de glace">
+                    <p class="img-caption">Fig 2. Schéma de la ligne des glaces</p>
+
+                    <ul>
+                        <li><strong>En deçà (zone chaude) :</strong> L'eau est vaporeuse. Seuls les métaux et roches silicatées résistent. Cela donne naissance aux petites <em>planètes telluriques</em>.</li>
+                        <li><strong>Au-delà (zone froide) :</strong> L'eau et les volatils gèlent, fournissant une quantité massive de matériaux solides. C'est ici que se forment les noyaux des futures <em>géantes gazeuses</em>.</li>
+                    </ul>
+
+                    <h3>Un système en mouvement : la migration planétaire</h3>
+                    <p>Les planètes ne se forment pas sagement sur leur orbite définitive. Les interactions gravitationnelles avec le disque de gaz provoquent des déplacements massifs. Pour notre propre Système solaire, l'hypothèse du <strong>« Grand Tack »</strong> (Grand virement de bord) suggère que Jupiter aurait migré vers l'intérieur du système avant de repartir vers l'extérieur, sous l'influence de Saturne.</p>
+
+                    <h3>Conclusion</h3>
+                    <p>Loin d'être un processus fluide et linéaire, la formation d'un système stellaire est le résultat complexe de collisions, d'instabilités et de migrations. L'étude de ces mécanismes nous permet aujourd'hui de comprendre pourquoi notre Système solaire, avec ses petites planètes rocheuses proches du Soleil et ses géantes lointaines, n'est finalement qu'une configuration possible parmi l'infinie variété des systèmes exoplanétaires découverts à ce jour.</p>
+
+                    <h3>Références Bibliographiques</h3>
+                    <ul>
+                        <li><strong>Weidenschilling, S. J.</strong> (1977). <em>Aerodynamics of solid bodies in the solar nebula</em>. Monthly Notices of the Royal Astronomical Society, 180(2), 57-70. <a href="https://ui.adsabs.harvard.edu/abs/1977MNRAS.180...57W/abstract" target="_blank">Lien</a> | <a href="https://articles.adsabs.harvard.edu/pdf/1977MNRAS.180...57W" target="_blank">PDF</a></li>
+                        <li><strong>Walsh, K. J., Morbidelli, A., Raymond, S. N., O'Brien, D. P., & Mandell, A. M.</strong> (2011). <em>A low mass for Mars from Jupiter's early gas-driven migration</em>. Nature, 475(7355), 206-209. <a href="https://www.nature.com/articles/nature10201" target="_blank">Lien</a> | <a href="https://arxiv.org/pdf/1201.5177" target="_blank">PDF</a></li>
+                    </ul>
+                `
+            },
+            {
+                id: 5,
+                title: "L'histoire de notre Système Solaire",
+                author: "Enzo Guerrin",
+                date: "5 janvier 2026",
+                image: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=800&q=80",
+                excerpt: "Pendant longtemps la formation de la Terre, et plus largement du système solaire, était restée un mystère et ce jusqu'à ces dernières décennies.",
+                content: `
+                    <h3>Introduction</h3>
+                    <p>Pendant longtemps la formation de la Terre, et plus largement du système solaire, était restée un mystère et ce jusqu'à ces dernières décennies. En effet, la science nous a depuis permis d'étudier l'Univers, ses corps et de nouveaux phénomènes ainsi que d'élaborer des modèles mathématiques complexes afin de retracer l'histoire de notre monde, du <strong>Big Bang</strong> daté à il y a environ 13,8 milliards d'années, à la naissance des premières étoiles.</p>
+
+                    <h3>Les prédécesseurs de notre Soleil</h3>
+                    <p>En ce qui concerne notre système solaire, on sait qu'il est plutôt jeune par rapport à l'Univers du haut de ses <strong>4,6 milliards d'années</strong>. Mais récemment, un scénario publié en août 2012 précise que dans la région où nous nous situons, d'autres étoiles auraient précédé notre Soleil. C'est ce que Matthieu GOUNELLE, professeur du Musée National d'Histoire Naturelle, et Georges MEYNET, astrophysicien à l'observatoire de Genève, avancent dans leur article « Solar system genealogy revealed by extinct short-lived radionuclides in meteorites ».</p>
+
+                    <p>Tout part d'un constat : l'abondance en aluminium 26 et fer 60 du nuage interstellaire où notre système s'est formé requiert des conditions qu'aucun modèle précédent ne pouvait justifier. Les deux scientifiques supposent alors que pour obtenir autant de fer et d'aluminium, <strong>deux générations d'étoiles ont précédé notre Soleil</strong>.</p>
+
+                    <p>Parmi la première, un grand nombre d'<strong>étoiles supermassives</strong> (bien plus grandes que notre Soleil) se seraient éteintes en s'effondrant sur elles-mêmes avant d'imploser au cours d'événements appelés <strong>supernovaes</strong>, libérant une grande quantité de fer 60. Ce fer se serait plus tard incorporé au sein d'un nuage de matière où <strong>au moins une grande étoile</strong> aurait pris forme (dans le cadre d'une seconde génération). Cette seconde étoile aurait alors expulsé de son vivant beaucoup d'aluminium 26 jusqu'à mourir au sein du nuage où notre Soleil est né quelques millions d'années après.</p>
+
+                    <h3>L'apparition du Soleil et d'un proto-système</h3>
+                    <p>La naissance de notre Soleil prend donc place à la suite de ces étoiles, il y a <strong>4,568 milliards d'années</strong>. Cependant la naissance d'une étoile ne se réalise pas comme par magie : elle nécessite l'<strong>effondrement d'une portion de nuage interstellaire</strong>. Dans le cas de notre système solaire, l'ouvrage "La Naissance de la Terre" d'Alain R.Meunier, professeur de géologie à l'Université de Poitiers, rapporte que cet effondrement aurait été engendré <strong>par une supernovae</strong> suivant la mort d'une des étoiles les plus importantes de la génération précédant le Soleil : <strong>Coatlicue</strong>.</p>
+
+                    <p>A partir de là et bien qu'il n'en est alors qu'au stade de jeune étoile, cela suffit pour projeter les premières fondations de notre système. Pendant quelques millions d'années, la matière se condense en un <strong>disque proto-planétaire</strong>, où les gaz et les poussières forment des agrégats et éventuellement plus tard, des <strong>embryons planétaires</strong>.</p>
+
+                    <img src="https://wordpress.emi.u-bordeaux.fr/tdcn-m32-4/wp-content/uploads/sites/1463/2026/01/image-1-edited-1024x576.png" alt="Proto-étoile et disque protoplanétaire">
+                    <p class="img-caption">Vue d'artiste de notre Soleil, au stade de proto-étoile, et de son disque protoplanétaire. Crédit : Nasa/JPL</p>
+
+                    <h3>Les premières planètes de notre système</h3>
+                    <p>De ces embryons planétaires, quatre d'entre eux ont engendré, au cours d'un laps de dix millions d'années, les <strong>"géantes gazeuses" Jupiter et Saturne</strong> et les <strong>"géantes de glace" Uranus et Neptune</strong>. Ces dernières ont été formées <strong>au-delà de la limite du gel</strong>, à partir de glace et d'autres éléments volatiles condensés et de gaz expulsé par les vents solaires, sorte de vagues d'énergie parfois émises par notre Soleil à cause de son activité thermonucléaire.</p>
+
+                    <p>Un premier embryon s'est nourri de la grande majorité du gaz présent sur son orbite, avec un peu de matière volatile tandis qu'un second embryon lui a lessivé les restes. Ils ont respectivement donné Jupiter et Saturne.</p>
+
+                    <p>Toutefois, le développement de ces deux corps ne s'arrête pas là et se poursuit durant un événement, appelé le <strong>"Grand Tack"</strong>, que décrit Michel Joye, diplomé en Sciences Naturelles à l'Université de Fribourg, dans son ouvrage "Terre : L'histoire de notre planète, de sa naissance à sa disparition". Concrètement, Jupiter, alors ralentie par d'autres corps sur son orbite, a initié <strong>une migration en emportant Saturne</strong> dans son sillage, le tout en traversant la Ceinture d'astéroïdes qui séparent les planètes telluriques et les planètes gazeuses et de glace.</p>
+
+                    <img src="https://haroldconnollyblog.wordpress.com/wp-content/uploads/2017/06/grand-tack-small.jpg" alt="Grand Tack">
+                    <p class="img-caption">Représentation du Grand Tack. Crédit : Solar System Archaeology, Part II. Echelle de distance par rapport au Soleil (0). De gauche à droite : ensemble de planétésimaux et embryons planétaires puis les proto-planètes et leur forme finale, Jupiter, Saturne, Uranus et Neptune.</p>
+
+                    <p>En parallèle de ce Grand Tack, Neptune et Uranus se sont formées avec <strong>les glaces délaissées</strong> par Jupiter et Saturne ainsi qu'avec le peu de gaz restant à l'extérieur du disque proto-planétaire, d'où leur titre de « géantes de glace ». Elles ont plus tard migré vers l'extérieur du système, repoussées par Jupiter à son retour du Grand Tack.</p>
+
+                    <h3>Les planètes telluriques et leur formation mouvementée</h3>
+                    <p>Enfin, les planètes telluriques que sont Mercure, Vénus, la Terre et Mars se sont formées <strong>entre 4,558 milliards d'années et 4,458 milliards d'années</strong>, soit pendant 100 millions d'années.</p>
+
+                    <p>Une différence marque leur formation : elles se sont construites à proximité du Soleil, <strong>en-deçà de la limite du gel</strong>. Les embryons planétaires présents dans cette zone ont alors plutôt agrégé des métaux, comme du nickel ou du fer, et des roches silicatées contrairement aux géantes gazeuses et de glaces. Si l'accumulation de matière lourde, par attraction gravitationnelle, a permis une grande partie de leur croissance, beaucoup sont entrés en collision entre eux, comme notre proto-Terre et Theia, et <strong>deux bombardements météoritiques</strong> ont eu lieu dans la partie interne du système.</p>
+
+                    <p>Jupiter est d'ailleurs responsable du deuxième bombardement, en pertubant durant sa migration la Ceinture d'astéroïdes mais également la ceinture de Kuiper, située par-delà Neptune, et le nuage d'Oort constituant l'ultime région qui englobe notre système entier. Un grand nombre d'astéroïdes ont alors été <strong>catapultés vers l'intérieur de notre système</strong> et sur les proto-planètes qui s'y trouvaient. Ils sont par exemple intervenus dans la <strong>mise en place de leurs différentes enveloppes</strong>.</p>
+
+                    <p>Parmi les quatre planètes telluriques, Mars a été la première d'entre elles à avoir complété sa formation. En fait, lorsque Jupiter est repartie vers l'extérieur du système, elle a tiré Mars hors de son orbite d'origine vers une région du disque protoplanétaire déjà vidée de sa matière.</p>
+
+                    <h3>Bibliographie</h3>
+                    <ul>
+                        <li><strong>Alain R Meunier</strong> (2014) - "La Naissance de la Terre : de sa formation à l'apparition de la vie" - Dunod. Disponible sur <a href="https://univ-scholarvox-com.docelec.u-bordeaux.fr/book/88819017" target="_blank">Scholar Vox Universités</a></li>
+                        <li><strong>Michel Joye</strong> (2021) - "Terre : L'histoire de notre planète, de sa naissance à sa disparition" - PPUR, 2e Edition</li>
+                        <li><strong>Matthieu Gounelle & Georges Meynet</strong> (2012) - "Solar system genealogy revealed by extinct short-lived radionuclides in meteorites" - Astronomy and Astrophysics. <a href="https://www.aanda.org/articles/aa/full_html/2012/09/aa19031-12/aa19031-12.html" target="_blank">Lien</a></li>
+                    </ul>
+                `
+            }
+        ];
+
+        function createBackground() {
+            const bg = document.getElementById('starsBg');
+            
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 2 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                bg.appendChild(star);
+            }
+            
+            setInterval(() => {
+                const shootingStar = document.createElement('div');
+                shootingStar.className = 'shooting-star';
+                shootingStar.style.left = Math.random() * 100 + '%';
+                shootingStar.style.top = Math.random() * 50 + '%';
+                shootingStar.style.width = Math.random() * 100 + 150 + 'px';
+                shootingStar.style.animationDuration = Math.random() * 1 + 1.5 + 's';
+                bg.appendChild(shootingStar);
+                
+                setTimeout(() => {
+                    shootingStar.remove();
+                }, 3000);
+            }, 2000);
+        }
+
+        function showSection(section) {
+            const articlesSection = document.getElementById('articles');
+            const aboutSection = document.getElementById('about');
+            
+            if (section === 'articles') {
+                articlesSection.style.display = 'grid';
+                aboutSection.classList.remove('active');
+            } else if (section === 'about') {
+                articlesSection.style.display = 'none';
+                aboutSection.classList.add('active');
+            }
+        }
+
+        function renderArticles() {
+            const grid = document.getElementById('articles');
+            grid.innerHTML = articles.map(article => `
+                <div class="article-card" onclick="openModal(${article.id})">
+                    <img src="${article.image}" alt="${article.title}" class="article-image">
+                    <div class="article-header">
+                        <h2>${article.title}</h2>
+                        <div class="article-meta">
+                            <span>👤 ${article.author}</span>
+                            <span>📅 ${article.date}</span>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <p>${article.excerpt}</p>
+                        <span class="read-more">Lire l'article complet →</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(id) {
+            const article = articles.find(a => a.id === id);
+            const modal = document.getElementById('modal');
+            const modalBody = document.getElementById('modal-body');
+            
+            modalBody.innerHTML = `
+                <h2>${article.title}</h2>
+                <div class="article-meta">
+                    <span>👤 ${article.author}</span>
+                    <span>📅 ${article.date}</span>
+                </div>
+                <div style="margin-top: 2rem;">
+                    ${article.content}
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createBackground();
+            renderArticles();
+        });
+    </script>
+</body>
+</html>
